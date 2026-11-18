@@ -1,0 +1,81 @@
+# Camunda 8.10.9, official image (Java 25 as shipped), one pod = Zeebe broker + gateway + REST API.
+# Cluster size and partition count are fixed at start: values below are for 1 broker, k8s/camunda8/start.sh N rewrites them and starts all N brokers at once.
+# Secondary storage (history/search) via the RDBMS exporter into Kafgres; REST API without authentication, like the other engines.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: camunda8
+spec:
+  serviceName: camunda8-headless
+  replicas: 1
+  podManagementPolicy: Parallel   # brokers must start together to form the cluster
+  selector:
+    matchLabels: {app: camunda8}
+  template:
+    metadata:
+      labels: {app: camunda8}
+    spec:
+      containers:
+        - name: camunda8
+          image: camunda/camunda:8.10.9
+          # node id = pod ordinal (camunda8-0 -> 0); peers reach each other via the headless service
+          command: [sh, -c, "export CAMUNDA_CLUSTER_NODEID=${HOSTNAME##*-} CAMUNDA_CLUSTER_NETWORK_ADVERTISEDHOST=${HOSTNAME}.camunda8-headless.bench.svc.cluster.local; exec /usr/local/camunda/bin/camunda"]
+          env:
+            - {name: CAMUNDA_CLUSTER_SIZE, value: "1"}
+            - {name: CAMUNDA_CLUSTER_PARTITIONCOUNT, value: "1"}
+            - {name: CAMUNDA_CLUSTER_REPLICATIONFACTOR, value: "1"}
+            - {name: CAMUNDA_CLUSTER_INITIALCONTACTPOINTS, value: "camunda8-0.camunda8-headless.bench.svc.cluster.local:26502"}
+            - {name: CAMUNDA_DATA_SECONDARYSTORAGE_TYPE, value: rdbms}
+            - {name: CAMUNDA_DATA_SECONDARYSTORAGE_RDBMS_URL, value: "jdbc:postgresql://kafgres:5432/postgres"}
+            - {name: CAMUNDA_DATA_SECONDARYSTORAGE_RDBMS_USERNAME, value: postgres}
+            - {name: CAMUNDA_DATA_SECONDARYSTORAGE_RDBMS_PASSWORD, value: postgres}
+            - {name: CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI, value: "true"}
+            - {name: CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED, value: "false"}
+          ports:
+            - {name: rest, containerPort: 8080}
+            - {name: internal, containerPort: 26502}
+            - {name: management, containerPort: 9600}
+          resources:   # identical for every engine: 1 CPU / 2 GB per replica
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {cpu: "1", memory: 2Gi}
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: 9600}
+            periodSeconds: 1
+            failureThreshold: 600
+          volumeMounts:
+            - {name: data, mountPath: /usr/local/camunda/data}
+      volumes:
+        - name: data
+          emptyDir: {}   # Zeebe log starts empty on every start, like the database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: camunda8-headless
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true   # brokers must find each other before they are ready
+  selector: {app: camunda8}
+  ports: [{name: internal, port: 26502}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: camunda8
+spec:
+  selector: {app: camunda8}
+  ports: [{port: 80, targetPort: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: camunda8
+spec:
+  rules:
+    - host: camunda8.bench.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: camunda8, port: {number: 80}}

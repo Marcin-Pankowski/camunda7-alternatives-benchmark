@@ -1,0 +1,48 @@
+# Postgres 16 with the Kafgres extension: process database and Kafka broker in one.
+# emptyDir on purpose: every benchmark run starts from a fresh, empty database.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafgres
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: kafgres}
+  template:
+    metadata:
+      labels: {app: kafgres}
+    spec:
+      containers:
+        - name: postgres
+          image: kafgres-postgres:0.3.1
+          imagePullPolicy: Never   # built locally, imported with `k3d image import`
+          # Kafka clients must reconnect to the advertised address, so it has to be the service name.
+          args: ["postgres", "-c", "kafgres.advertised_host=kafgres.bench.svc.cluster.local", "-c", "max_connections=300"]
+          env:
+            - {name: POSTGRES_PASSWORD, value: postgres}
+          ports:
+            - {name: postgres, containerPort: 5432}
+            - {name: kafka, containerPort: 9092}
+          resources:
+            requests: {cpu: "2", memory: 2Gi}
+            limits: {cpu: "2", memory: 2Gi}
+          readinessProbe:
+            # TCP, not the local socket: during first init Postgres runs on the socket only, clients would get "connection refused"
+            exec: {command: [pg_isready, -U, postgres, -h, 127.0.0.1]}
+            periodSeconds: 2
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafgres
+spec:
+  selector: {app: kafgres}
+  ports:
+    - {name: postgres, port: 5432}
+    - {name: kafka, port: 9092}

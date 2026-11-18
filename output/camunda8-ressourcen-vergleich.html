@@ -1,0 +1,63 @@
+<section id="c8-comparison" data-viz-composition>
+  <style>
+    #c8-comparison { display:grid; gap:calc(var(--font-size-base) * 1); }
+    #c8-comparison .heading { display:grid; gap:calc(var(--font-size-base) * .25); padding-right:90px; }
+    #c8-comparison .notes { display:grid; gap:calc(var(--font-size-base) * .5); }
+  </style>
+  <div class="heading">
+    <h2>Camunda 8: bisherige und neue Ressourcen</h2>
+    <p class="text-small text-muted">Szenario A · Mit History · CPU und RAM jeweils als Gesamtbudget der Broker</p>
+  </div>
+  <div class="viz-controls">
+    <label class="form-label" for="c8-vus">Parallele Nutzer insgesamt
+      <select id="c8-vus" class="form-select" disabled>
+        <option value="best" selected>Bester gültiger Wert aus 10–100 VUs</option>
+        <option value="10">10 VUs</option><option value="25">25 VUs</option><option value="50">50 VUs</option><option value="100">100 VUs</option>
+      </select>
+    </label>
+  </div>
+  <p id="c8-selection" class="text-small" aria-live="polite"></p>
+  <div data-viz-container aria-label="Camunda-8-Durchsatz bei fünf Konfigurationen aus Brokerzahl, CPU und RAM"></div>
+  <div class="notes text-small">
+    <p id="c8-details" aria-live="polite"></p>
+    <p>Gültig: ≥ 99 % korrekte Antworten und p95 ≤ 2.000 ms. Ungültige Messpunkte bleiben als Lücke sichtbar. Einzelmessungen ohne Fehlerbalken.</p>
+    <p>Neu: 1 Broker mit 3,5 CPU / 8 GiB; 3 Broker mit je 1,166 CPU / 8 GiB. Bisher: je 1 CPU / 2 GiB. Brokerzahl = Partitionszahl, Replikationsfaktor 1.</p>
+    <p class="text-muted">M1 Max · Docker 8 CPUs / 32 GB · Kafgres unverändert 4 CPUs · RAM-Angaben sind Limits, keine gemessene Nutzung. Quellen: results/history-full/, history-full-c8max/ und history-full-c8max3/.</p>
+  </div>
+  <script type="application/json" data-viz-chart data-state="best">{"id": "c8-resource-throughput", "title": "Durchsatz mit History", "description": "Bester gültiger Durchsatz je Konfiguration; unterschiedliche VU-Stufen möglich.", "height": 460, "columns": ["Konfiguration", "Anfragen/s"], "rows": [["Bisher: 1 Broker · 1 CPU / 2 GiB", 290.7], ["Neu: 1 Broker · 3,5 CPU / 8 GiB", 554.4], ["Bisher: 2 Broker · 2 CPU / 4 GiB", 516.3], ["Bisher: 3 Broker · 3 CPU / 6 GiB", 767.8], ["Neu: 3 Broker · ≈3,5 CPU / 24 GiB", 721.9]], "spec": {"type": "horizontalBar", "y": "Konfiguration", "x": "Anfragen/s", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 850], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
+<script type="application/json" data-viz-chart data-state="10">{"id": "c8-resource-throughput", "title": "Durchsatz mit History", "description": "10 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "height": 460, "columns": ["Konfiguration", "Anfragen/s"], "rows": [["Bisher: 1 Broker · 1 CPU / 2 GiB", 244.5], ["Neu: 1 Broker · 3,5 CPU / 8 GiB", 536.5], ["Bisher: 2 Broker · 2 CPU / 4 GiB", 410.4], ["Bisher: 3 Broker · 3 CPU / 6 GiB", 550.9], ["Neu: 3 Broker · ≈3,5 CPU / 24 GiB", 500.1]], "spec": {"type": "horizontalBar", "y": "Konfiguration", "x": "Anfragen/s", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 850], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
+<script type="application/json" data-viz-chart data-state="25">{"id": "c8-resource-throughput", "title": "Durchsatz mit History", "description": "25 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "height": 460, "columns": ["Konfiguration", "Anfragen/s"], "rows": [["Bisher: 1 Broker · 1 CPU / 2 GiB", 275.4], ["Neu: 1 Broker · 3,5 CPU / 8 GiB", 554.4], ["Bisher: 2 Broker · 2 CPU / 4 GiB", 508.8], ["Bisher: 3 Broker · 3 CPU / 6 GiB", 687.3], ["Neu: 3 Broker · ≈3,5 CPU / 24 GiB", 709.5]], "spec": {"type": "horizontalBar", "y": "Konfiguration", "x": "Anfragen/s", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 850], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
+<script type="application/json" data-viz-chart data-state="50">{"id": "c8-resource-throughput", "title": "Durchsatz mit History", "description": "50 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "height": 460, "columns": ["Konfiguration", "Anfragen/s"], "rows": [["Bisher: 1 Broker · 1 CPU / 2 GiB", 290.7], ["Neu: 1 Broker · 3,5 CPU / 8 GiB", 553.5], ["Bisher: 2 Broker · 2 CPU / 4 GiB", 504.7], ["Bisher: 3 Broker · 3 CPU / 6 GiB", 751.2], ["Neu: 3 Broker · ≈3,5 CPU / 24 GiB", 721.9]], "spec": {"type": "horizontalBar", "y": "Konfiguration", "x": "Anfragen/s", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 850], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
+<script type="application/json" data-viz-chart data-state="100">{"id": "c8-resource-throughput", "title": "Durchsatz mit History", "description": "100 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "height": 460, "columns": ["Konfiguration", "Anfragen/s"], "rows": [["Bisher: 1 Broker · 1 CPU / 2 GiB", null], ["Neu: 1 Broker · 3,5 CPU / 8 GiB", null], ["Bisher: 2 Broker · 2 CPU / 4 GiB", 516.3], ["Bisher: 3 Broker · 3 CPU / 6 GiB", 767.8], ["Neu: 3 Broker · ≈3,5 CPU / 24 GiB", 718.7]], "spec": {"type": "horizontalBar", "y": "Konfiguration", "x": "Anfragen/s", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 850], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
+  <script type="application/json" id="c8-notes">{"best": {"selection": "Bester gültiger Durchsatz je Konfiguration; unterschiedliche VU-Stufen möglich.", "details": "Gewählte Laststufen: Bisher: 1 Broker: 50 VUs; Neu: 1 Broker: 25 VUs; Bisher: 2 Broker: 100 VUs; Bisher: 3 Broker: 100 VUs; Neu: 3 Broker: 50 VUs."}, "10": {"selection": "10 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "details": "Alle fünf Messpunkte erfüllen die Kriterien."}, "25": {"selection": "25 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "details": "Alle fünf Messpunkte erfüllen die Kriterien."}, "50": {"selection": "50 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "details": "Alle fünf Messpunkte erfüllen die Kriterien."}, "100": {"selection": "100 VUs insgesamt · gleiche Parallelität für alle Konfigurationen.", "details": "Bisher: 1 Broker: nur 3,5 % korrekt (2153,0 Antworten/s), nicht gewertet. Neu: 1 Broker: nur 5,5 % korrekt (5939,6 Antworten/s), nicht gewertet."}}</script>
+</section>
+<script type="module">
+  import { mountChart } from "https://persistent.oaistatic.com/plugins/visualize/charts/1.2.3/element.js";
+  const root = document.getElementById("c8-comparison");
+  const control = root.querySelector("#c8-vus");
+  const configs = new Map(Array.from(root.querySelectorAll("[data-viz-chart]"), node => [node.dataset.state, JSON.parse(node.textContent)]));
+  const notes = JSON.parse(root.querySelector("#c8-notes").textContent);
+  let state = "best";
+  function restore(snapshot) {
+    const value = snapshot?.modelContent;
+    if (value?.view === "c8-resources-v1") state = ["best", "10", "25", "50", "100"].includes(String(value.vus)) ? String(value.vus) : "best";
+  }
+  restore(window.openai?.widgetState);
+  const chart = mountChart(root.querySelector("[data-viz-container]"), configs.get(state));
+  function render() {
+    control.value = state;
+    chart.config = configs.get(state);
+    root.querySelector("#c8-selection").textContent = notes[state].selection;
+    root.querySelector("#c8-details").textContent = notes[state].details;
+  }
+  control.addEventListener("change", () => {
+    state = control.value;
+    render();
+    window.openai?.setWidgetState?.({modelContent:{view:"c8-resources-v1",vus:state},privateContent:null}).catch(() => {});
+  });
+  window.addEventListener("openai:set_globals", event => {
+    if (event.detail?.globals?.widgetState) { restore(event.detail.globals.widgetState); render(); }
+  });
+  render();
+  control.disabled = false;
+</script>

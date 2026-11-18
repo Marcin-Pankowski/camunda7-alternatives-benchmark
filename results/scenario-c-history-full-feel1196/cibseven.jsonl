@@ -1,0 +1,11 @@
+{"type":"config","engine":"cibseven","db_cpu":"4","engine_cpu":"1","engine_mem":"2Gi","image_tag":"1.0.0-feel1196","history":"full","scenario":"c","run_tag":"feel1196","replicas":[1]}
+{"type":"startup","engine":"cibseven","replicas":1,"seconds":10.9}
+{"type":"ram_idle","engine":"cibseven","replicas":1,"mib":[262]}
+{"type":"ram_load","engine":"cibseven","replicas":1,"vus":10,"mib":[388],"cpu_m":[992],"db_cpu_m":[1125]}
+{"type":"load","replicas":1,"engine":"cibseven","vus":10,"throughput":441.9,"p50_ms":11.1,"p95_ms":52.2,"p99_ms":83,"ok_rate":1}
+{"type":"ram_load","engine":"cibseven","replicas":1,"vus":25,"mib":[411],"cpu_m":[991],"db_cpu_m":[1575]}
+{"type":"load","replicas":1,"engine":"cibseven","vus":25,"throughput":422.1,"p50_ms":54.8,"p95_ms":101.2,"p99_ms":146,"ok_rate":1}
+{"type":"ram_load","engine":"cibseven","replicas":1,"vus":50,"mib":[438],"cpu_m":[999],"db_cpu_m":[1583]}
+{"type":"load","replicas":1,"engine":"cibseven","vus":50,"throughput":390.4,"p50_ms":111.9,"p95_ms":243.6,"p99_ms":320.2,"ok_rate":1}
+{"type":"ram_load","engine":"cibseven","replicas":1,"vus":100,"mib":[477],"cpu_m":[991],"db_cpu_m":[1469]}
+{"type":"load","replicas":1,"engine":"cibseven","vus":100,"throughput":357.8,"p50_ms":268.9,"p95_ms":537.8,"p99_ms":693.7,"ok_rate":1}

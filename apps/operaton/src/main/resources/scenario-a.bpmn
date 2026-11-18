@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Scenario A: start via REST, three trivial service tasks, result returned synchronously. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:operaton="http://operaton.org/schema/1.0/bpmn" id="Definitions_ScenarioA" targetNamespace="http://example.com/bench">
+  <bpmn:process id="ScenarioA" isExecutable="true" operaton:historyTimeToLive="P1D">
+    <bpmn:startEvent id="Start" />
+    <bpmn:sequenceFlow id="f1" sourceRef="Start" targetRef="Task1" />
+    <bpmn:serviceTask id="Task1" name="Task 1" operaton:expression="${counter + 1}" operaton:resultVariable="counter" />
+    <bpmn:sequenceFlow id="f2" sourceRef="Task1" targetRef="Task2" />
+    <bpmn:serviceTask id="Task2" name="Task 2" operaton:expression="${counter + 1}" operaton:resultVariable="counter" />
+    <bpmn:sequenceFlow id="f3" sourceRef="Task2" targetRef="Task3" />
+    <bpmn:serviceTask id="Task3" name="Task 3" operaton:expression="${counter + 1}" operaton:resultVariable="counter" />
+    <bpmn:sequenceFlow id="f4" sourceRef="Task3" targetRef="End" />
+    <bpmn:endEvent id="End" />
+  </bpmn:process>
+  <!-- Diagram layout only (BPMN editors show an empty canvas without it); no effect on execution. -->
+  <bpmndi:BPMNDiagram id="Diagram_ScenarioA">
+    <bpmndi:BPMNPlane id="Plane_ScenarioA" bpmnElement="ScenarioA">
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="Start"><dc:Bounds x="100" y="142" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task1" bpmnElement="Task1"><dc:Bounds x="190" y="120" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task2" bpmnElement="Task2"><dc:Bounds x="340" y="120" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task3" bpmnElement="Task3"><dc:Bounds x="490" y="120" width="100" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="End"><dc:Bounds x="640" y="142" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_f1" bpmnElement="f1"><di:waypoint x="136" y="160"/><di:waypoint x="190" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f2" bpmnElement="f2"><di:waypoint x="290" y="160"/><di:waypoint x="340" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f3" bpmnElement="f3"><di:waypoint x="440" y="160"/><di:waypoint x="490" y="160"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f4" bpmnElement="f4"><di:waypoint x="590" y="160"/><di:waypoint x="640" y="160"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

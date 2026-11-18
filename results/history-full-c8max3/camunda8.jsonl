@@ -1,0 +1,11 @@
+{"type":"config","engine":"camunda8","db_cpu":"4","engine_cpu":"1166m","engine_mem":"8Gi","history":"full","scenario":"a","run_tag":"c8max3","replicas":[3]}
+{"type":"startup","engine":"camunda8","replicas":3,"seconds":46.0}
+{"type":"ram_idle","engine":"camunda8","replicas":3,"mib":[582,575,580]}
+{"type":"ram_load","engine":"camunda8","replicas":3,"vus":10,"mib":[1135,1125,1149],"cpu_m":[1044,1021,1043],"db_cpu_m":[132]}
+{"type":"load","replicas":3,"engine":"camunda8","vus":10,"throughput":500.1,"p50_ms":13.5,"p95_ms":55.5,"p99_ms":86.8,"ok_rate":1}
+{"type":"ram_load","engine":"camunda8","replicas":3,"vus":25,"mib":[1193,1494,1622],"cpu_m":[1115,1115,1111],"db_cpu_m":[238]}
+{"type":"load","replicas":3,"engine":"camunda8","vus":25,"throughput":709.5,"p50_ms":30.4,"p95_ms":76.6,"p99_ms":118.3,"ok_rate":1}
+{"type":"ram_load","engine":"camunda8","replicas":3,"vus":50,"mib":[2070,2346,2444],"cpu_m":[1137,1141,1156],"db_cpu_m":[198]}
+{"type":"load","replicas":3,"engine":"camunda8","vus":50,"throughput":721.9,"p50_ms":55.7,"p95_ms":167.2,"p99_ms":238.5,"ok_rate":1}
+{"type":"ram_load","engine":"camunda8","replicas":3,"vus":100,"mib":[3251,3156,1440],"cpu_m":[1131,1138,1155],"db_cpu_m":[248]}
+{"type":"load","replicas":3,"engine":"camunda8","vus":100,"throughput":718.7,"p50_ms":128.5,"p95_ms":250.8,"p99_ms":354.6,"ok_rate":1}

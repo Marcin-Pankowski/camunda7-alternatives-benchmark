@@ -1,0 +1,55 @@
+# Kogito 10.2.0 on Quarkus, GraalVM native image (apps/kogito-kafka), Kafka persistence (topic kogito.process in Kafgres).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kogito-native-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: kogito-native-kafka}
+  template:
+    metadata:
+      labels: {app: kogito-native-kafka}
+    spec:
+      initContainers:   # Kafgres starts empty: create the Kafka topics Kogito writes to (process events, persistence)
+        - name: create-topics
+          image: kafgres-postgres:0.3.1
+          imagePullPolicy: Never
+          env: [{name: PGPASSWORD, value: postgres}]
+          # wait until Postgres accepts TCP connections; creating an existing topic fails, which is fine on scale-out
+          command: [sh, -c, "until psql -h kafgres -U postgres -tAc 'SELECT 1' >/dev/null 2>&1; do sleep 1; done; for t in kogito-processinstances-events:4 kogito-processdefinitions-events:1 kogito-usertaskinstances-events:1 kogito.process:4; do psql -h kafgres -U postgres -tAc \"SELECT kafgres_create_topic('${t%:*}', ${t#*:})\" >/dev/null 2>&1 || echo \"topic ${t%:*} already exists\"; done"]
+      containers:
+        - name: kogito-native-kafka
+          image: bench-kogito-native-kafka:1.0.0
+          imagePullPolicy: Never   # built locally (apps/), imported with `k3d image import`
+          envFrom: [{configMapRef: {name: history, optional: true}}]   # history switches, written by scenario-a.sh --history
+          ports: [{containerPort: 8080}]
+          resources:   # identical for every engine: 1 CPU / 2 GB per replica
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {cpu: "1", memory: 2Gi}
+          readinessProbe:
+            httpGet: {path: /q/health/ready, port: 8080}
+            periodSeconds: 1
+            failureThreshold: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kogito-native-kafka
+spec:
+  selector: {app: kogito-native-kafka}
+  ports: [{port: 80, targetPort: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kogito-native-kafka
+spec:
+  rules:
+    - host: kogito-native-kafka.bench.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: kogito-native-kafka, port: {number: 80}}

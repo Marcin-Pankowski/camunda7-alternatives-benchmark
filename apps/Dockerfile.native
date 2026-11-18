@@ -1,0 +1,8 @@
+# Shared image for the Kogito native executables (apps/kogito, apps/kogito-kafka): Quarkus' minimal base image.
+# Build from the app folder: docker build -f apps/Dockerfile.native -t bench-<engine>:1.0.0 apps/<app>
+# UBI 9 (glibc 2.34) like the Mandrel builder image; the UBI 8 based quarkus-micro-image lacks glibc 2.32+
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
+WORKDIR /app
+COPY target/*-runner ./application
+EXPOSE 8080
+CMD ["./application"]

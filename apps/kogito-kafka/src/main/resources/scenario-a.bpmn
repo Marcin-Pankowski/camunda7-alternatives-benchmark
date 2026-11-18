@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Scenario A: start via REST, three trivial tasks, result returned synchronously.
+     Kogito has no JUEL expressions, so the tasks are Java script tasks (counter + 1 each). -->
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_ScenarioA" targetNamespace="http://example.com/bench">
+  <bpmn2:itemDefinition id="_counterItem" structureRef="Integer"/>
+  <bpmn2:process id="ScenarioA" drools:packageName="de.piu.bpmn.benchmark" drools:version="1.0" isExecutable="true" processType="Public">
+    <bpmn2:property id="counter" itemSubjectRef="_counterItem" name="counter"/>
+    <bpmn2:startEvent id="Start"><bpmn2:outgoing>f1</bpmn2:outgoing></bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="f1" sourceRef="Start" targetRef="Task1"/>
+    <bpmn2:scriptTask id="Task1" name="Task 1" scriptFormat="http://www.java.com/java">
+      <bpmn2:incoming>f1</bpmn2:incoming><bpmn2:outgoing>f2</bpmn2:outgoing>
+      <bpmn2:script>kcontext.setVariable("counter", counter + 1);</bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="f2" sourceRef="Task1" targetRef="Task2"/>
+    <bpmn2:scriptTask id="Task2" name="Task 2" scriptFormat="http://www.java.com/java">
+      <bpmn2:incoming>f2</bpmn2:incoming><bpmn2:outgoing>f3</bpmn2:outgoing>
+      <bpmn2:script>kcontext.setVariable("counter", counter + 1);</bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="f3" sourceRef="Task2" targetRef="Task3"/>
+    <bpmn2:scriptTask id="Task3" name="Task 3" scriptFormat="http://www.java.com/java">
+      <bpmn2:incoming>f3</bpmn2:incoming><bpmn2:outgoing>f4</bpmn2:outgoing>
+      <bpmn2:script>kcontext.setVariable("counter", counter + 1);</bpmn2:script>
+    </bpmn2:scriptTask>
+    <bpmn2:sequenceFlow id="f4" sourceRef="Task3" targetRef="End"/>
+    <bpmn2:endEvent id="End"><bpmn2:incoming>f4</bpmn2:incoming></bpmn2:endEvent>
+  </bpmn2:process>
+  <!-- Diagram layout only (the Kogito editor shows an empty canvas without it); no effect on execution. -->
+  <bpmndi:BPMNDiagram id="Diagram_ScenarioA">
+    <bpmndi:BPMNPlane id="Plane_ScenarioA" bpmnElement="ScenarioA">
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="Start">
+        <dc:Bounds x="100" y="142" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task1" bpmnElement="Task1">
+        <dc:Bounds x="190" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task2" bpmnElement="Task2">
+        <dc:Bounds x="340" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Task3" bpmnElement="Task3">
+        <dc:Bounds x="490" y="120" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="End">
+        <dc:Bounds x="640" y="142" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_f1" bpmnElement="f1">
+        <di:waypoint x="136" y="160"/>
+        <di:waypoint x="190" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f2" bpmnElement="f2">
+        <di:waypoint x="290" y="160"/>
+        <di:waypoint x="340" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f3" bpmnElement="f3">
+        <di:waypoint x="440" y="160"/>
+        <di:waypoint x="490" y="160"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f4" bpmnElement="f4">
+        <di:waypoint x="590" y="160"/>
+        <di:waypoint x="640" y="160"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

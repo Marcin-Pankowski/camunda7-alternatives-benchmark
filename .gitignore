@@ -1,0 +1,26 @@
+# Only our own work goes into the repo. Third-party tools and images are downloaded, never committed.
+
+# Downloaded tools (k3d binary, see README "Starten")
+bin/
+
+# Build output (Maven, Quarkus, GraalVM native)
+target/
+*.class
+*.jar
+*.war
+
+# Profiler recordings and heap dumps from diagnosis runs
+*.jfr
+*.hprof
+
+# Editor, OS and assistant tooling
+.DS_Store
+.idea/
+.vscode/
+*.iml
+.github/modernize/
+graphify-out/
+
+# Local secrets, if ever needed
+.env
+*.local

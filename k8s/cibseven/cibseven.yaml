@@ -1,0 +1,48 @@
+# CIB seven 2.2.0 as Spring Boot app (apps/cibseven): engine + REST, no webapps, database in Kafgres.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cibseven
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: cibseven}
+  template:
+    metadata:
+      labels: {app: cibseven}
+    spec:
+      containers:
+        - name: cibseven
+          image: bench-cibseven:1.0.0
+          imagePullPolicy: Never   # built locally (apps/), imported with `k3d image import`
+          envFrom: [{configMapRef: {name: history, optional: true}}]   # history switches, written by scenario-a.sh --history
+          ports: [{containerPort: 8080}]
+          resources:   # identical for every engine: 1 CPU / 2 GB per replica
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {cpu: "1", memory: 2Gi}
+          readinessProbe:
+            httpGet: {path: /engine-rest/engine, port: 8080}
+            periodSeconds: 1
+            failureThreshold: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cibseven
+spec:
+  selector: {app: cibseven}
+  ports: [{port: 80, targetPort: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cibseven
+spec:
+  rules:
+    - host: cibseven.bench.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: cibseven, port: {number: 80}}

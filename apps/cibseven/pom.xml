@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- The Spring Boot version CIB seven 2.2.0 is built against -->
+    <version>4.0.6</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>de.piu.bpmn.benchmark</groupId>
+  <artifactId>cibseven-scenario-a</artifactId>
+  <version>1.0.0</version>
+
+  <properties>
+    <java.version>21</java.version>
+    <!-- CIB seven 2.2.0 ships 1.19.3, which rebuilds all FEEL builtin functions on every evaluation (fixed in 1.19.4).
+         Image bench-cibseven:1.0.0 (main runs) was built with 1.19.3: mvn package -Dfeel-engine.version=1.19.3 -->
+    <feel-engine.version>1.19.6</feel-engine.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- own entry wins over the version from the CIB seven BOM -->
+      <dependency>
+        <groupId>org.camunda.feel</groupId>
+        <artifactId>feel-engine</artifactId>
+        <version>${feel-engine.version}</version>
+        <classifier>scala-shaded</classifier>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Engine + REST API (/engine-rest), no webapps -->
+    <dependency>
+      <groupId>org.cibseven.bpm.springboot</groupId>
+      <artifactId>cibseven-bpm-spring-boot-starter-rest-4</artifactId>
+      <version>2.2.0</version>
+    </dependency>
+    <!-- Spring Boot 4 moved JDBC/transaction auto-configuration into its own module; the CIB seven starter does not pull it in -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>app</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,9 @@
+# Engine settings stay at their defaults; only the database points to Kafgres.
+spring:
+  datasource:
+    url: jdbc:postgresql://kafgres:5432/postgres
+    username: postgres
+    password: postgres
+# History level full for all engines that have history levels (Flowable's Spring Boot default would be "audit").
+flowable:
+  history-level: full

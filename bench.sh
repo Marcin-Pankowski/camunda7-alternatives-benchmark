@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Scenario A (or C with SCENARIO=c) for one engine: startup time, RAM, throughput + p95 per replica step and 10/25/50/100 VUs.
+# Scenario A (or B with SCENARIO=b) for one engine: startup time, RAM, throughput + p95 per replica step and 10/25/50/100 VUs.
 # Every replica count starts on a fresh, empty database. Results go to results/history-<HISTORY>[-<RUN_TAG>]/<engine>.jsonl.
-# Scenario C results go to results/scenario-c-history-<HISTORY>[-<RUN_TAG>]/.
-# Usage: [REPLICAS=1,2,3] [HISTORY=full] [RUN_TAG=iterfix] [SCENARIO=a|c] ./bench.sh cibseven   (normally called by scenario-a.sh, which also sets the Kafgres CPUs)
+# Scenario B results go to results/scenario-b-history-<HISTORY>[-<RUN_TAG>]/.
+# Usage: [REPLICAS=1,2,3] [HISTORY=full] [RUN_TAG=iterfix] [SCENARIO=a|b] ./bench.sh cibseven   (normally called by scenario-a.sh, which also sets the Kafgres CPUs)
 set -euo pipefail
 cd "$(dirname "$0")"
 ENGINE=$1 NS=bench REPLICAS=${REPLICAS:-1,2,3} HISTORY=${HISTORY:-full} SCENARIO=${SCENARIO:-a}
@@ -43,8 +43,8 @@ run_k6() {  # $1 = VUs; prints the RESULT json
 # Remove the engine also on failure, so leftover pods never block the next engine.
 trap 'kubectl delete -k "k8s/$ENGINE" --ignore-not-found >/dev/null' EXIT
 
-# scenario C also needs the rule list the expected fees are computed from
-K6_FILES=(--from-file=load/scenario-$SCENARIO.js); [ "$SCENARIO" = c ] && K6_FILES+=(--from-file=load/scenario-c-rules.json)
+# scenario B also needs the rule list the expected fees are computed from
+K6_FILES=(--from-file=load/scenario-$SCENARIO.js); [ "$SCENARIO" = b ] && K6_FILES+=(--from-file=load/scenario-b-rules.json)
 kubectl -n $NS create configmap k6-scenario-$SCENARIO "${K6_FILES[@]}" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
 
 for R in ${REPLICAS//,/ }; do

@@ -1,4 +1,4 @@
-{"type":"config","engine":"kogito-sb","db_cpu":"4","engine_cpu":"1","history":"full","scenario":"c","run_tag":"","replicas":[1,2,3]}
+{"type":"config","engine":"kogito-sb","db_cpu":"4","engine_cpu":"1","history":"full","scenario":"b","run_tag":"","replicas":[1,2,3]}
 {"type":"startup","engine":"kogito-sb","replicas":1,"seconds":13.1}
 {"type":"ram_idle","engine":"kogito-sb","replicas":1,"mib":[251]}
 {"type":"ram_load","engine":"kogito-sb","replicas":1,"vus":10,"mib":[345]}

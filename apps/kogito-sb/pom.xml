@@ -40,7 +40,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-spring-boot-starter</artifactId>
     </dependency>
-    <!-- DMN engine for scenario C (business rule task with pricing.dmn) -->
+    <!-- DMN engine for scenario B (business rule task with pricing.dmn) -->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-decisions-spring-boot-starter</artifactId>

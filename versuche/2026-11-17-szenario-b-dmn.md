@@ -1,8 +1,8 @@
-# Versuch: Szenario C, DMN-Tabelle mit 100 Regeln
+# Versuch: Szenario B, DMN-Tabelle mit 100 Regeln
 
 **Datum:** 17.11.2026, 09:56–14:15 · **Befehl:** `./scenario-a.sh --db-cpu 4 --replicas 1,2,3 --history full
---scenario c cibseven operaton flowable kogito-jvm kogito-jvm-kafka kogito-sb kogito-native kogito-native-kafka
-camunda8` · **Rohdaten:** [results/scenario-c-history-full/](../results/scenario-c-history-full/) · **Vergleich:**
+--scenario b cibseven operaton flowable kogito-jvm kogito-jvm-kafka kogito-sb kogito-native kogito-native-kafka
+camunda8` · **Rohdaten:** [results/scenario-b-history-full/](../results/scenario-b-history-full/) · **Vergleich:**
 Szenario A mit History, [results/history-full/](../results/history-full/) (Protokoll
 [2026-11-15-mit-history.md](2026-11-15-mit-history.md)); für die beiden Kafka-Varianten
 [results/history-full-iterfix/](../results/history-full-iterfix/) (Protokoll
@@ -16,7 +16,7 @@ DMN-Tabelle mit etwa 100 Zeilen.
 
 ## Aufbau
 
-- Prozess `ScenarioC`: Start → Business Rule Task → Ende. Szenario A bleibt unverändert.
+- Prozess `ScenarioB`: Start → Business Rule Task → Ende. Szenario A bleibt unverändert.
 - Entscheidung `Pricing` mit 100 Regeln, Hit Policy **COLLECT mit Aggregation SUM**. Gewählt wurde „wie FIRST,
   aber COLLECT“: Statt beim ersten Treffer aufzuhören, wird jede Anfrage gegen alle 100 Regeln geprüft und die
   Gebühren aller Treffer werden addiert.
@@ -27,14 +27,14 @@ DMN-Tabelle mit etwa 100 Zeilen.
   leer. Selbsttest über 10.000 Zufallsanfragen: 74 % treffen außer Regel 100 mindestens eine weitere Regel, im
   Schnitt etwa 2.
 - [load/gen-pricing-dmn.py](../load/gen-pricing-dmn.py) erzeugt die Tabelle für jede Engine und dieselben Regeln als
-  `load/scenario-c-rules.json`. [load/scenario-c.js](../load/scenario-c.js) rechnet daraus pro Anfrage die richtige
+  `load/scenario-b-rules.json`. [load/scenario-b.js](../load/scenario-b.js) rechnet daraus pro Anfrage die richtige
   Gebühr; nur genau diese zählt als korrekt.
 - Testaufruf vor jeder Engine: Alter 65, Betrag 30.000, FR, business → Gebühr 1.254. Alle 9 Engines lieferten 1.254.
 - Rahmen wie in Szenario A mit History: Kafgres 4 CPU / 2 GB, jeder Engine-Pod 1 CPU / 2 GB, Replicas 1/2/3,
   10/25/50/100 VUs, je 60 s Aufwärmen + 60 s Messung, jede Replica-Stufe auf leerer Datenbank. Die Kafka-Varianten
   laufen mit dem Iterator-Fix.
-- Neu in den Skripten: `--scenario a|c` in `scenario-a.sh`, `SCENARIO` in `bench.sh`. Ergebnisse gehen nach
-  `results/scenario-c-history-<stufe>/`, die config-Zeile hat ein Feld `scenario`.
+- Neu in den Skripten: `--scenario a|b` in `scenario-a.sh`, `SCENARIO` in `bench.sh`. Ergebnisse gehen nach
+  `results/scenario-b-history-<stufe>/`, die config-Zeile hat ein Feld `scenario`.
 
 ### Pro Engine
 
@@ -68,8 +68,8 @@ Szenario A gemessenen liegen als `:1.0.0-a` daneben. Nach dem Umbau lieferte Sze
 
 ## Ergebnisse
 
-Alle Tabellen stehen im README unter „Ergebnisse Szenario C (History voll)“. Kurzfassung, bester gültiger Durchsatz
-je Replica-Stufe (Anfragen/s, Szenario A → C):
+Alle Tabellen stehen im README unter „Ergebnisse Szenario B (History voll)“. Kurzfassung, bester gültiger Durchsatz
+je Replica-Stufe (Anfragen/s, Szenario A → B):
 
 | Engine | 1 Replica | 2 Replicas | 3 Replicas |
 |---|---:|---:|---:|
@@ -104,16 +104,16 @@ korrekt), 1 × 100 (4 %) und 2 × 100 (27 %). Die anderen 103 von 108 Stufen: 10
    Auswertung `new BuiltinFunctions(…)` erzeugt; in 1.22.1 ein einmal gebautes Feld (`private val rootContext`).
    Sonst ist `FeelEngine.scala` gleich. Korrigiert ab 1.19.4 und 1.20.1 (1.20.0 noch alt).
    Gegenmessung am Abend mit `feel-engine` 1.19.6 (pom-Override, Image `bench-cibseven:1.0.0-feel1196`, 1 Replica,
-   Rohdaten `results/scenario-c-history-full-feel1196/`): 442 / 422 / 390 / 358 pro Sekunde bei 10 / 25 / 50 / 100
+   Rohdaten `results/scenario-b-history-full-feel1196/`): 442 / 422 / 390 / 358 pro Sekunde bei 10 / 25 / 50 / 100
    VUs statt 81 / 73 / 76 / 78, p95 52–538 ms, alle Antworten korrekt. Damit gleichauf mit Operaton (423 / 418 /
    367 / 245). Die Ursache ist belegt: die ausgelieferte FEEL-Version.
 3. **Operaton und Flowable verlieren etwa die Hälfte**, skalieren aber mit den Replicas wie in Szenario A. Woran
    die Zeit geht, ist nicht geprüft (kein Profil).
 4. **Kogito verliert wenig oder gewinnt.** Mit History wartet Kogito Quarkus auf die Bestätigung jedes Events durch
-   Kafgres; Szenario C hat nur einen Knoten, vermutlich also weniger Events pro Instanz (nicht gezählt). Die
+   Kafgres; Szenario B hat nur einen Knoten, vermutlich also weniger Events pro Instanz (nicht gezählt). Die
    DMN-Auswertung selbst fällt daneben nicht ins Gewicht. Der Sockel bei 10 VUs (≈ 100/s, egal wie viele Pods)
    bleibt.
-5. **Kogito SB ist in Szenario C die schnellste Engine** (1.699/s mit 3 Replicas, p95 23 ms), vor Flowable
+5. **Kogito SB ist in Szenario B die schnellste Engine** (1.699/s mit 3 Replicas, p95 23 ms), vor Flowable
    (1.144/s) und Operaton (881/s).
 6. **Camunda 8 verliert kaum (4–9 %), wird aber früher ungültig:** schon bei 1 Broker × 50 VUs und bei 2 Brokern ×
    100 VUs. Die Ursache ist nicht geprüft, weil k6 nur „richtig/falsch“ speichert.
@@ -126,4 +126,4 @@ korrekt), 1 × 100 (4 %) und 2 × 100 (27 %). Die anderen 103 von 108 Stufen: 10
   die FEEL-Version anzuheben (Text vorher zeigen); 2 und 3 Replicas mit 1.19.6.
 - Camunda 8: HTTP-Status der falschen Antworten aufzeichnen (Backpressure oder Fehler).
 - Offen, wie viel von Operatons und Flowables Verlust auf die Tabelle und wie viel auf die History der Entscheidung
-  entfällt: Szenario C ohne History messen.
+  entfällt: Szenario B ohne History messen.

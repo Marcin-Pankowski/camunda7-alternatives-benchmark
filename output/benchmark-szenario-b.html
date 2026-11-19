@@ -7,7 +7,7 @@
     #bpmn-c-results .exceptions:empty { display: none; }
   </style>
   <div class="heading">
-    <h2>Szenario C: DMN im Vergleich</h2>
+    <h2>Szenario B: DMN im Vergleich</h2>
     <p class="text-small text-muted">100 Regeln · COLLECT SUM · Mit History · 17. November 2026</p>
   </div>
   <div class="viz-controls">
@@ -24,14 +24,14 @@
     </label>
   </div>
   <p id="bpmn-c-selection" class="text-small" aria-live="polite"></p>
-  <div data-viz-container aria-label="Durchsatzvergleich der neun Engine-Konfigurationen für Szenario C mit History"></div>
+  <div data-viz-container aria-label="Durchsatzvergleich der neun Engine-Konfigurationen für Szenario B mit History"></div>
   <div class="notes text-small">
     <p id="bpmn-c-validity" aria-live="polite"></p>
     <ul id="bpmn-c-exceptions" class="exceptions"></ul>
     <p>Gültig: ≥ 99 % korrekte Antworten und p95 ≤ 2.000 ms. Balken: HTTP-Anfragen/s; ungültige Messpunkte erscheinen als Lücke. Einzelmessungen ohne Fehlerbalken.</p>
-    <p>Für Szenario C liegen nur Messungen mit History vor. Beide Kogito-Kafka-Varianten enthalten bereits den Iterator-Fix.</p>
+    <p>Für Szenario B liegen nur Messungen mit History vor. Beide Kogito-Kafka-Varianten enthalten bereits den Iterator-Fix.</p>
     <p>History-Verarbeitung: Camunda 8 exportiert asynchron nach PostgreSQL; Kogito Spring Boot bestätigt Events asynchron, Quarkus wartet.</p>
-    <p class="text-muted">M1 Max · Docker 8 CPUs / 32 GB · Kafgres 4 CPUs · je Engine-Pod 1 CPU / 2 GiB · 60 s Warm-up + 60 s Messung. Camunda: Podzahl = Broker- und Partitionszahl. Quelle: 9 JSONL-Dateien in results/scenario-c-history-full/.</p>
+    <p class="text-muted">M1 Max · Docker 8 CPUs / 32 GB · Kafgres 4 CPUs · je Engine-Pod 1 CPU / 2 GiB · 60 s Warm-up + 60 s Messung. Camunda: Podzahl = Broker- und Partitionszahl. Quelle: 9 JSONL-Dateien in results/scenario-b-history-full/.</p>
   </div>
   <script type="application/json" data-viz-chart data-state="1-best">{"id": "bpmn-c-throughput", "title": "Durchsatz mit History", "description": "1 Pod · Bester gültiger Wert je Engine; die gewählten VU-Stufen können verschieden sein.", "height": 620, "columns": ["Engine", "Mit History"], "rows": [["CIB seven", 81.3], ["Operaton", 422.9], ["Flowable", 344.8], ["Kogito Spring Boot", 602.2], ["Kogito JVM · JDBC", 279.1], ["Kogito Native · JDBC", 248.4], ["Kogito JVM · Kafka (Fix)", 580.7], ["Kogito Native · Kafka (Fix)", 473.1], ["Camunda 8", 280.2]], "spec": {"type": "horizontalBar", "y": "Engine", "x": "Mit History", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 2000], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>
 <script type="application/json" data-viz-chart data-state="1-10">{"id": "bpmn-c-throughput", "title": "Durchsatz mit History", "description": "1 Pod · 10 VUs insgesamt für alle Pods.", "height": 620, "columns": ["Engine", "Mit History"], "rows": [["CIB seven", 81.3], ["Operaton", 422.9], ["Flowable", 344.8], ["Kogito Spring Boot", 456.7], ["Kogito JVM · JDBC", 95.6], ["Kogito Native · JDBC", 93.3], ["Kogito JVM · Kafka (Fix)", 79.5], ["Kogito Native · Kafka (Fix)", 76.7], ["Camunda 8", 215.4]], "spec": {"type": "horizontalBar", "y": "Engine", "x": "Mit History", "xLabel": "HTTP-Anfragen pro Sekunde · höher ist besser", "xDomain": [0, 2000], "showLegend": false, "showValues": true, "sortOrder": "original", "valueFormat": {"style": "decimal", "maximumFractionDigits": 1}}}</script>

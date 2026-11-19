@@ -27,7 +27,7 @@
       <artifactId>flowable-spring-boot-starter-process-rest</artifactId>
       <version>8.0.0</version>
     </dependency>
-    <!-- DMN engine for scenario C (decision task with dmn/pricing.dmn); hooks itself into the process engine -->
+    <!-- DMN engine for scenario B (decision task with dmn/pricing.dmn); hooks itself into the process engine -->
     <dependency>
       <groupId>org.flowable</groupId>
       <artifactId>flowable-spring-boot-starter-dmn</artifactId>

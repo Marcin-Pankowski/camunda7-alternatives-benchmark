@@ -19,7 +19,7 @@ sed -e "s/replicas: 1$/replicas: $N/" -e "s/{cpu: \"1\", memory: 2Gi}/{cpu: \"${
 kubectl -n bench rollout status statefulset/camunda8 --timeout=600s >/dev/null
 # Deploy through the load balancer; retry until Traefik routes to the new pods.
 for _ in $(seq 60); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: camunda8.bench.local' -F "resources=@scenario-a.bpmn" -F "resources=@scenario-c.bpmn" -F "resources=@pricing.dmn" http://127.0.0.1:8081/v2/deployments) || true
+  code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: camunda8.bench.local' -F "resources=@scenario-a.bpmn" -F "resources=@scenario-b.bpmn" -F "resources=@pricing.dmn" http://127.0.0.1:8081/v2/deployments) || true
   [ "$code" = 200 ] && exit 0
   sleep 1
 done

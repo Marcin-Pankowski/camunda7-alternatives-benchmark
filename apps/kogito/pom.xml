@@ -45,7 +45,7 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-quarkus</artifactId>
     </dependency>
-    <!-- DMN engine for scenario C (business rule task with pricing.dmn) -->
+    <!-- DMN engine for scenario B (business rule task with pricing.dmn) -->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-quarkus-decisions</artifactId>

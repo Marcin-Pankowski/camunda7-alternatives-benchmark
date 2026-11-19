@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Scenario A for several engines in a row: one smoke request each (counter must come back as 3), then bench.sh.
-# Usage: [SMOKE_ONLY=1] ./scenario-a.sh [--db-cpu 4] [--replicas 1,2,3] [--history full|none] [--scenario a|c] cibseven operaton …
+# Usage: [SMOKE_ONLY=1] ./scenario-a.sh [--db-cpu 4] [--replicas 1,2,3] [--history full|none] [--scenario a|b] cibseven operaton …
 #   --db-cpu    CPUs for Kafgres (request = limit), default 4
 #   --replicas  replica steps per engine, e.g. 1,2,3 or 1,2,4,8; default 1,2,3. Every engine pod gets 1 CPU.
 #   --history   full (default): every change is recorded (history level full / Kogito process events / Camunda 8
 #               secondary storage). none: only the runtime state is persisted. Results go to results/history-<value>/
 #               (RUN_TAG=<tag> in the environment: results/history-<value>-<tag>/, for re-measurements).
-#   --scenario  a (default): 3 tasks counter+1. c: one business rule task, 100-rule DMN table (COLLECT + SUM);
-#               results in results/scenario-c-history-<value>/.
+#   --scenario  a (default): 3 tasks counter+1. b: one business rule task, 100-rule DMN table (COLLECT + SUM);
+#               results in results/scenario-b-history-<value>/.
 set -uo pipefail
 cd "$(dirname "$0")"
 LB=http://127.0.0.1:8081
@@ -22,8 +22,8 @@ while [[ ${1:-} == --* ]]; do
     *) echo "unknown option $1"; exit 1 ;;
   esac
 done
-[[ $DB_CPU =~ ^[0-9]+$ && $REPLICAS =~ ^[0-9]+(,[0-9]+)*$ && $HISTORY =~ ^(full|none)$ && $SCENARIO =~ ^(a|c)$ ]] \
-  || { echo "--db-cpu needs a number, --replicas a list like 1,2,4, --history full or none, --scenario a or c"; exit 1; }
+[[ $DB_CPU =~ ^[0-9]+$ && $REPLICAS =~ ^[0-9]+(,[0-9]+)*$ && $HISTORY =~ ^(full|none)$ && $SCENARIO =~ ^(a|b)$ ]] \
+  || { echo "--db-cpu needs a number, --replicas a list like 1,2,4, --history full or none, --scenario a or b"; exit 1; }
 export REPLICAS HISTORY SCENARIO
 
 # Numbers taken on battery or across a sleep are worthless.
@@ -50,15 +50,15 @@ NONE_VARS=(--from-literal=CAMUNDA_BPM_HISTORY_LEVEL=none --from-literal=OPERATON
 kubectl -n bench create configmap history ${NONE_VARS[@]+"${NONE_VARS[@]}"} --dry-run=client -o yaml | kubectl apply -f - >/dev/null
 echo "history: $HISTORY"
 
-# Scenario C smoke input: age 65, amount 30000, FR, business hits several rules, fee 1254 (load/gen-pricing-dmn.py).
-smoke_c() {  # $1 engine; sets path, body, expect
+# Scenario B smoke input: age 65, amount 30000, FR, business hits several rules, fee 1254 (load/gen-pricing-dmn.py).
+smoke_b() {  # $1 engine; sets path, body, expect
   case $1 in
-    kogito-*) path=/ScenarioC; body='{"age":65,"amount":30000,"country":"FR","customerType":"business"}' ;;
+    kogito-*) path=/ScenarioB; body='{"age":65,"amount":30000,"country":"FR","customerType":"business"}' ;;
     camunda8) path=/v2/process-instances
-              body='{"processDefinitionId":"ScenarioC","variables":{"age":65,"amount":30000,"country":"FR","customerType":"business"},"awaitCompletion":true}' ;;
+              body='{"processDefinitionId":"ScenarioB","variables":{"age":65,"amount":30000,"country":"FR","customerType":"business"},"awaitCompletion":true}' ;;
     flowable) path=/process-api/runtime/process-instances
-              body='{"processDefinitionKey":"ScenarioC","returnVariables":true,"variables":[{"name":"age","type":"integer","value":65},{"name":"amount","type":"integer","value":30000},{"name":"country","type":"string","value":"FR"},{"name":"customerType","type":"string","value":"business"}]}' ;;
-    *)        path=/engine-rest/process-definition/key/ScenarioC/start
+              body='{"processDefinitionKey":"ScenarioB","returnVariables":true,"variables":[{"name":"age","type":"integer","value":65},{"name":"amount","type":"integer","value":30000},{"name":"country","type":"string","value":"FR"},{"name":"customerType","type":"string","value":"business"}]}' ;;
+    *)        path=/engine-rest/process-definition/key/ScenarioB/start
               body='{"variables":{"age":{"value":65,"type":"Integer"},"amount":{"value":30000,"type":"Integer"},"country":{"value":"FR","type":"String"},"customerType":{"value":"business","type":"String"}},"withVariablesInReturn":true}' ;;
   esac
   expect='"fee"[^}]{0,60}:1254(\.0+)?[,}]'   # "fee":1254 or "name":"fee",…,"value":1254.0
@@ -74,7 +74,7 @@ smoke() {  # $1 engine
               body='{"processDefinitionKey":"ScenarioA","variables":[{"name":"counter","type":"integer","value":0}],"returnVariables":true}' ;;
     *)        path=/engine-rest/process-definition/key/ScenarioA/start; body=$C7_BODY; expect='"value":3' ;;
   esac
-  [ "$SCENARIO" = c ] && smoke_c "$1"
+  [ "$SCENARIO" = b ] && smoke_b "$1"
   # Fresh database: CIB seven and Operaton share the ACT_* table names, so a leftover ScenarioA of the other engine would be started.
   kubectl -n bench rollout restart deploy/kafgres >/dev/null && kubectl -n bench rollout status deploy/kafgres --timeout=180s >/dev/null || return 1
   local start="kubectl kustomize k8s/$1 | sed 's|image: bench-$1:1.0.0\$|image: bench-$1:${ENGINE_TAG:-1.0.0}|' | kubectl apply -f - >/dev/null && kubectl -n bench rollout status deploy/$1 --timeout=300s >/dev/null"

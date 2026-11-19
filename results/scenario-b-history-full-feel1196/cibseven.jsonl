@@ -1,4 +1,4 @@
-{"type":"config","engine":"cibseven","db_cpu":"4","engine_cpu":"1","engine_mem":"2Gi","image_tag":"1.0.0-feel1196","history":"full","scenario":"c","run_tag":"feel1196","replicas":[1]}
+{"type":"config","engine":"cibseven","db_cpu":"4","engine_cpu":"1","engine_mem":"2Gi","image_tag":"1.0.0-feel1196","history":"full","scenario":"b","run_tag":"feel1196","replicas":[1]}
 {"type":"startup","engine":"cibseven","replicas":1,"seconds":10.9}
 {"type":"ram_idle","engine":"cibseven","replicas":1,"mib":[262]}
 {"type":"ram_load","engine":"cibseven","replicas":1,"vus":10,"mib":[388],"cpu_m":[992],"db_cpu_m":[1125]}

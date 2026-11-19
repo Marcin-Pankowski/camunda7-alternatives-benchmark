@@ -1,6 +1,6 @@
-// Scenario C: start a process with one business rule task (100-rule pricing table, COLLECT + SUM) via REST and wait
+// Scenario B: start a process with one business rule task (100-rule pricing table, COLLECT + SUM) via REST and wait
 // for the result. Every request gets random inputs; the expected fee is computed from the same rules the DMN was
-// generated from (load/scenario-c-rules.json, see load/gen-pricing-dmn.py), so a wrong evaluation counts as failed.
+// generated from (load/scenario-b-rules.json, see load/gen-pricing-dmn.py), so a wrong evaluation counts as failed.
 // Timing as in scenario A: 60 s warm-up, then 60 s measured at the same number of VUs.
 import http from 'k6/http';
 import { check } from 'k6';
@@ -10,7 +10,7 @@ const ENGINE = __ENV.ENGINE;
 const VUS = Number(__ENV.VUS || 10);
 const WARMUP_S = 60;
 const MEASURE_S = 60;
-const RULES = JSON.parse(open('./scenario-c-rules.json'));
+const RULES = JSON.parse(open('./scenario-b-rules.json'));
 const COUNTRIES = ['DE', 'AT', 'CH', 'FR', 'NL'];
 const TYPES = ['standard', 'premium', 'business', 'student'];
 
@@ -25,7 +25,7 @@ const expectedFee = (i) => RULES
 // One request shape per engine; each must return only after the process has ended. Numbers are compared with ==
 // after Number(): engines return the sum as integer, long or decimal.
 const c7 = (i, fee) => ({
-  url: `${LB}/engine-rest/process-definition/key/ScenarioC/start`,
+  url: `${LB}/engine-rest/process-definition/key/ScenarioB/start`,
   body: JSON.stringify({
     variables: {
       age: { value: i.age, type: 'Integer' }, amount: { value: i.amount, type: 'Integer' },
@@ -36,14 +36,14 @@ const c7 = (i, fee) => ({
   ok: (r) => r.status === 200 && Number(r.json('variables.fee.value')) === fee,
 });
 const kogito = (i, fee) => ({
-  url: `${LB}/ScenarioC`,
+  url: `${LB}/ScenarioB`,
   body: JSON.stringify(i),
   ok: (r) => r.status === 201 && Number(r.json('fee')) === fee,
 });
 const flowable = (i, fee) => ({
   url: `${LB}/process-api/runtime/process-instances`,
   body: JSON.stringify({
-    processDefinitionKey: 'ScenarioC', returnVariables: true,
+    processDefinitionKey: 'ScenarioB', returnVariables: true,
     variables: [{ name: 'age', type: 'integer', value: i.age }, { name: 'amount', type: 'integer', value: i.amount },
       { name: 'country', type: 'string', value: i.country }, { name: 'customerType', type: 'string', value: i.customerType }],
   }),
@@ -51,7 +51,7 @@ const flowable = (i, fee) => ({
 });
 const camunda8 = (i, fee) => ({
   url: `${LB}/v2/process-instances`,
-  body: JSON.stringify({ processDefinitionId: 'ScenarioC', variables: i, awaitCompletion: true }),
+  body: JSON.stringify({ processDefinitionId: 'ScenarioB', variables: i, awaitCompletion: true }),
   ok: (r) => r.status === 200 && Number(r.json('variables.fee')) === fee,
 });
 const REQUESTS = { cibseven: c7, operaton: c7, flowable, camunda8 };

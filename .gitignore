@@ -24,3 +24,6 @@ graphify-out/
 # Local secrets, if ever needed
 .env
 *.local
+
+# Rendered videos (large, published on YouTube instead)
+video/

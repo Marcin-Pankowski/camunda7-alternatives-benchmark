@@ -140,6 +140,6 @@ Smoke-Test vor jedem Lauf: `counter = 3` bei allen vier Läufen. Startzeiten unv
 
 ## Offene Punkte
 
-- Issue und PR an Apache KIE (Texte liegen vor, warten auf Freigabe).
+- Erledigt 2026-11-22: Issue https://github.com/apache/incubator-kie-issues/issues/2427, PR https://github.com/apache/incubator-kie/pull/7313.
 - Bleibt die korrigierte Klasse dauerhaft in `apps/kogito-kafka`? Dann sollten die Hauptergebnisse für die
   Kafka-Varianten in beiden Fassungen gezeigt werden (so jetzt im README).

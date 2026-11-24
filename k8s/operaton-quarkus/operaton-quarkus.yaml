@@ -1,0 +1,48 @@
+# Operaton 2.2.1 as Quarkus app (apps/operaton-quarkus, JVM mode): engine + REST, no webapps, database in Kafgres.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operaton-quarkus
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: operaton-quarkus}
+  template:
+    metadata:
+      labels: {app: operaton-quarkus}
+    spec:
+      containers:
+        - name: operaton-quarkus
+          image: bench-operaton-quarkus:1.0.0
+          imagePullPolicy: Never   # built locally (apps/), imported with `k3d image import`
+          envFrom: [{configMapRef: {name: history, optional: true}}]   # history switches, written by scenario-a.sh --history
+          ports: [{containerPort: 8080}]
+          resources:   # identical for every engine: 1 CPU / 2 GB per replica
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {cpu: "1", memory: 2Gi}
+          readinessProbe:
+            httpGet: {path: /engine-rest/engine, port: 8080}
+            periodSeconds: 1
+            failureThreshold: 600
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operaton-quarkus
+spec:
+  selector: {app: operaton-quarkus}
+  ports: [{port: 80, targetPort: 8080}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: operaton-quarkus
+spec:
+  rules:
+    - host: operaton-quarkus.bench.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: operaton-quarkus, port: {number: 80}}

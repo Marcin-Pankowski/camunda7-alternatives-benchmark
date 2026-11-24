@@ -43,6 +43,7 @@ kubectl -n bench set resources deploy/kafgres --requests=cpu=$DB_CPU --limits=cp
 # of an ended instance from history, so with "none" the reply has no counter (user decision 2026-11-16).
 # Read by every engine deployment via envFrom (Camunda 8: k8s/camunda8/start.sh reads $HISTORY). Empty = app defaults (full).
 NONE_VARS=(--from-literal=CAMUNDA_BPM_HISTORY_LEVEL=none --from-literal=OPERATON_BPM_HISTORY_LEVEL=none
+  --from-literal=QUARKUS_CIBSEVEN_GENERIC_CONFIG_HISTORY=none --from-literal=QUARKUS_OPERATON_GENERIC_CONFIG_HISTORY=none
   --from-literal=FLOWABLE_HISTORY_LEVEL=activity --from-literal=KOGITO_EVENTS_PROCESSINSTANCES_ENABLED=false
   --from-literal=KOGITO_EVENTS_PROCESSDEFINITIONS_ENABLED=false --from-literal=KOGITO_EVENTS_USERTASKS_ENABLED=false)
 [ "$HISTORY" = full ] && NONE_VARS=()

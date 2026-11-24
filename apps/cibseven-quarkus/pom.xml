@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.piu.bpmn.benchmark</groupId>
+  <artifactId>cibseven-quarkus-scenario-a</artifactId>
+  <version>1.0.0</version>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Same engine version as the Spring Boot app (apps/cibseven) -->
+    <cibseven.version>2.2.0</cibseven.version>
+    <!-- The Quarkus version the CIB seven 2.2.0 extension is built against -->
+    <quarkus.version>3.27.0</quarkus.version>
+    <!-- As in apps/cibseven: CIB seven 2.2.0 ships 1.19.3, which rebuilds all FEEL builtin functions on every evaluation (fixed in 1.19.4) -->
+    <feel-engine.version>1.19.6</feel-engine.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.camunda.feel</groupId>
+        <artifactId>feel-engine</artifactId>
+        <version>${feel-engine.version}</version>
+        <classifier>scala-shaded</classifier>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${quarkus.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- Engine (JVM mode only, see README) -->
+    <dependency>
+      <groupId>org.cibseven.bpm.quarkus</groupId>
+      <artifactId>cibseven-bpm-quarkus-engine</artifactId>
+      <version>${cibseven.version}</version>
+    </dependency>
+    <!-- The extension has no REST API: the plain JAX-RS resources (/engine-rest) on RESTEasy, registered in RestApplication -->
+    <dependency>
+      <groupId>org.cibseven.bpm</groupId>
+      <artifactId>cibseven-engine-rest-core-jakarta</artifactId>
+      <version>${cibseven.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-maven-plugin</artifactId>
+        <version>${quarkus.version}</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals><goal>build</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

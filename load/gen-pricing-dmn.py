@@ -121,6 +121,8 @@ if __name__ == "__main__":
         "load/scenario-b-rules.json": json.dumps(rules, indent=None),
         "apps/cibseven/src/main/resources/pricing.dmn": feel_dmn(rules, "integer", c7=True),
         "apps/operaton/src/main/resources/pricing.dmn": feel_dmn(rules, "integer", c7=True),
+        "apps/cibseven-quarkus/src/main/resources/pricing.dmn": feel_dmn(rules, "integer", c7=True),
+        "apps/operaton-quarkus/src/main/resources/pricing.dmn": feel_dmn(rules, "integer", c7=True),
         "apps/kogito/src/main/resources/pricing.dmn": feel_dmn(rules, "number"),
         "apps/kogito-kafka/src/main/resources/pricing.dmn": feel_dmn(rules, "number"),
         "apps/kogito-sb/src/main/resources/pricing.dmn": feel_dmn(rules, "number"),

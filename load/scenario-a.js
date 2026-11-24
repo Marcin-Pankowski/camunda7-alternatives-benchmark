@@ -34,7 +34,7 @@ const camunda8 = () => ({
   body: JSON.stringify({ processDefinitionId: 'ScenarioA', variables: { counter: 0 }, awaitCompletion: true }),
   ok: (r) => r.status === 200 && r.json('variables.counter') === 3,
 });
-const REQUESTS = { cibseven: c7, operaton: c7, flowable, camunda8 };
+const REQUESTS = { cibseven: c7, operaton: c7, 'cibseven-quarkus': c7, 'operaton-quarkus': c7, flowable, camunda8 };
 const req = REQUESTS[ENGINE] || (ENGINE && ENGINE.startsWith('kogito-') ? kogito : undefined);  // all Kogito variants share the API
 if (!req) throw new Error(`unknown ENGINE ${ENGINE}`);
 

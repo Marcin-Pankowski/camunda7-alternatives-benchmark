@@ -27,7 +27,8 @@ All engines run the same process (scenario A, see below). The two Quarkus varian
 added on 2026-11-23. `cibseven-quarkus` was measured on 2026-11-23 from 23:00 (A, B, A without history) in an
 environment **10–15 % below the main runs**: the control run of Spring Boot `operaton` right before it reached 665/s
 in A and 383/s in B (main runs 783/s and 423/s; Time Machine backup still running). Compare its numbers with the other
-engines only with this in mind. `operaton-quarkus` is not measured yet. Each app uses the Spring Boot or Quarkus version its
+engines only with this in mind. `operaton-quarkus` was measured on 2026-11-24 from 11:10 in an environment close to
+the main runs (control run Spring Boot `operaton`: A 732/s, B 448/s, i.e. 94 % and 106 %). Each app uses the Spring Boot or Quarkus version its
 engine is built against. Package and Maven groupId: `de.piu.bpmn.benchmark`.
 
 | ID | Engine | Packaging | Java | Persistence | The 3 tasks |
@@ -898,6 +899,25 @@ measured.
   Cause of the Quarkus gap not verified
   (candidates: JTA transactions via Narayana in the extension vs. plain JDBC transactions in Spring Boot, RESTEasy
   Classic vs. Jersey).
+- Full run `operaton-quarkus` on 2026-11-24, 11:10–12:36. Control run right before it, same procedure as above
+  (Spring Boot `operaton`, 1 replica, 10 VUs): A 732/s (p50 6 ms), B 448/s (p50 10 ms), i.e. 94 % and 106 % of the
+  main runs; the environment was close to the main level this time. Compared with the Spring Boot `operaton` main runs,
+  same format as for CIB seven:
+
+  | | Spring Boot 1 / 2 / 3 replicas | Quarkus 1 / 2 / 3 replicas |
+  |---|---|---|
+  | A, history full | 783 / 1,464 / 1,630/s | 598 / 1,120 / 1,462/s |
+  | B, history full | 423 / 740 / 881/s | 410 / 801 / 1,181/s |
+  | A, history none | 1,481 / 2,656 / 3,669/s | 1,080 / 2,164 / 3,059/s |
+  | Startup | 10–13 s | 6 s |
+  | RAM idle / under load | ≈ 260 / up to 479 MiB | ≈ 220 / up to 477 MiB |
+
+  All requests correct (ok_rate 1). In A Quarkus is 24 % behind at 1 and 2 replicas and 10 % at 3; without history
+  17–27 % behind. In B (DMN, more CPU work per request in the engine) Quarkus is on par at 1 replica and ahead at
+  2 and 3 replicas (+8 %, +34 %). The same pattern as with CIB seven: the fewer SQL statements per request matter
+  relative to the engine work, the more Quarkus falls behind; this fits a fixed overhead per request/transaction
+  (candidates as above: JTA via Narayana, RESTEasy Classic; not verified). Quarkus starts about twice as fast and
+  needs ≈ 40 MiB less RAM idle; under load the maximum is the same.
 
 ## Status
 
@@ -911,7 +931,7 @@ measured.
 - [x] CIB seven counter-measured in scenario B with `feel-engine` 1.19.6 (1 replica): collapse fixed
 - [x] CIB seven and Operaton on Quarkus (JVM) built and smoke-tested (A, B, history none)
 - [x] `cibseven-quarkus` measured (A, B, A without history; environment 10–15 % below the main runs)
-- [ ] Measure `operaton-quarkus`
+- [x] `operaton-quarkus` measured (A, B, A without history; environment 94–106 % of the main runs)
 - [ ] Open in scenario B: cause of the Camunda 8 errors from 50 VUs
 - [ ] Open in scenario A: waiting time of the Kafka acknowledgement for Kogito Quarkus
 - [ ] Load spike with autoscaling
